@@ -20,7 +20,16 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
         $db = new PDO("sqlite:$dbfilename");
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
         $db->exec("create table oncall(engineer VARCHAR(64) , phonenumber VARCHAR (32), oncall SMALLINT )");
+        $db->exec("CREATE TABLE incomingnumbers(number VARCHAR(32) PRIMARY KEY NOT NULL,team VARCHAR(32) NOT NULL,support_cat VARCHAR(32) NOT NULL)");
+
     }
+
+    $sqli = "SELECT * FROM incomingnumbers WHERE number='$callednumber'";
+    $resi = $db->query($sqli);
+    $rowi = $resi->fetch(PDO::FETCH_ASSOC);
+    $support_cat = $rowi['support_cat'];
+    $team = $rowi['team'];
+
     include('bankholiday.php');
     $year = date('Y');
     $today = date('Y-m-d');
@@ -29,7 +38,7 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
     $bankhol = in_array($today, $hols);
     $status = '';
 
-    if ($callednumber == $twentyfour) {
+    if ($support_cat == 'twentyfour') {
         //echo "Got 24\r\n";
         if ($bankhol) {
             $status = 'call engineer';
@@ -41,7 +50,7 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
             }
         }
     }
-    if ($callednumber == $extended) {
+    if ($support_cat == 'extended') {
         //echo "Got Extended\r\n";
         if ($bankhol) {
             $status = 'out of hours';
@@ -65,7 +74,7 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
             }
         }
     }
-    if ($callednumber == $eight2eight) {
+    if ($support_cat == 'eight2eight') {
         //echo "Got 8 to 8\r\n";
         if ($bankhol) {
             $status = 'out of hours';
@@ -87,7 +96,7 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
     if ($status == 'call engineer') {
 
 
-        $sql = "SELECT phonenumber FROM oncall WHERE oncall=1";
+        $sql = "SELECT phonenumber FROM oncall WHERE oncall=1 AND team='$team'";
         $res = $db->query($sql);
         $row = $res->fetch(PDO::FETCH_ASSOC);
         $oncallNumber = $row['phonenumber'];
@@ -100,6 +109,7 @@ if (isset($_GET['callednumber']) && $_GET['callednumber'] != '') {
     echo("<CalledNumber>$callednumber</CalledNumber>");
     echo("<Result>$status</Result>");
     echo("<OncallNumber>$oncallNumber</OncallNumber>");
+//    echo("<sql>$sql</sql>");
     echo('</record>');
     echo('</records>');
 }
