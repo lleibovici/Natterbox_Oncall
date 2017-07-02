@@ -33,13 +33,13 @@ if ($_POST["editsubmit"] != "") {
     }
     $team = $_POST["team"];
     $oldname = htmlspecialchars($_POST['oldname']);
-    $db->exec("UPDATE oncall SET oncall=0 WHERE team='$team' ");
     if ($oldname == '') {
         $sqlu = "INSERT INTO oncall VALUES('" . $engineer . "','" . $phonenumber . "'," . $oncall . ",'" . $team . "')";
     } else {
+        $db->exec("UPDATE oncall SET oncall=0 WHERE team='$team' ");
         $sqlu = "UPDATE oncall SET engineer='" . $engineer . "', phonenumber='" . $phonenumber . "', oncall=" . $oncall . ", team='" . $team . "' WHERE phonenumber='" . $oldname . "'";
     }
-    error_log($sqlu);
+//    error_log($sqlu);
     $db->exec($sqlu);
 }
 
