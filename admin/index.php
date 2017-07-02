@@ -14,6 +14,8 @@ if (file_exists($dbfilename)) {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
     $db->exec("create table oncall(engineer VARCHAR(64) , phonenumber VARCHAR (32), oncall SMALLINT, team VARCHAR(32) )");
     $db->exec("CREATE TABLE incomingnumbers(number VARCHAR(32) PRIMARY KEY NOT NULL,team VARCHAR(32) NOT NULL,support_cat VARCHAR(32) NOT NULL);");
+    $db->exec("CREATE UNIQUE INDEX incoming on incomingnumbers(number)");
+    $db->exec("CREATE UNIQUE INDEX oncallnum on oncall(phonenumber);");
 }
 //$db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
